@@ -1,0 +1,22 @@
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { pusherServer } from "@/libs/pusher";
+import { authOptions } from "@/app/libs/authOptions";
+
+export default async function handler(
+  request: NextApiRequest,
+  response: NextApiResponse
+) {
+  const session = await getServerSession(request, response, authOptions);
+  if (!session?.user?.email) {
+    return response.status(501);
+  }
+  const sockedId = request.body.socket_io;
+  const channel = request.body.channel_name;
+  const data = {
+    user_id: session.user.email,
+  };
+
+  const authResponse = pusherServer.authorizeChannel(sockedId, channel, data);
+  return response.send(authResponse);
+}
