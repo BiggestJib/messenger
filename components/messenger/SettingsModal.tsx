@@ -89,13 +89,25 @@ const SettingModal: React.FC<SettingsModalProps> = ({
                   Photo
                 </label>
                 <div className="mt-2 flex items-center gap-x-3">
-                  <Image
-                    width="48"
-                    height="48"
-                    className="rounded-full"
-                    src={image || currentUser?.image || "/images/R.jpeg"}
-                    alt="Avatar"
-                  />
+                  <div className="relative inline-block rounded-full overflow-hidden w-9 h-9 md:h-11 md:w-11">
+                    <CldUploadButton
+                      options={{
+                        maxFiles: 1, // Restrict to 1 file per upload
+                        resourceType: "image", // Restrict to images only
+                        clientAllowedFormats: ["jpg", "jpeg", "png", "gif"], // Allow specific image formats
+                      }}
+                      uploadPreset="acadrd0w" // Cloudinary upload preset
+                      onSuccess={handleUpload} // Handle successful upload
+                    >
+                      <Image
+                        width="48"
+                        height="48"
+                        className="rounded-full"
+                        src={image || currentUser?.image || "/images/R.jpeg"}
+                        alt="Avatar"
+                      />
+                    </CldUploadButton>
+                  </div>
 
                   <CldUploadButton
                     options={{

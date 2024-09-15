@@ -23,6 +23,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 }) => {
   const session = useSession();
   const [items, setItems] = useState(initialItems);
+  const [searchQuery, setSearchQuery] = useState(""); // State to handle the search query
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { conversationId, isOpen } = useConversation();
@@ -78,6 +79,24 @@ const ConversationList: React.FC<ConversationListProps> = ({
     };
   }, [pusherKey, router, conversationId]);
 
+  // Filter conversations based on search query for both conversation names, users, and messages
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      // Filter by conversation name, message content, or user names in the conversation
+      const matchesConversationName = item.name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesMessage = item.messages.some((message) =>
+        message.body?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const matchesUser = item.users.some((user) =>
+        user.name!.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      return matchesConversationName || matchesMessage || matchesUser;
+    });
+  }, [items, searchQuery]);
+
   return (
     <>
       <GroupChatModal
@@ -100,13 +119,31 @@ const ConversationList: React.FC<ConversationListProps> = ({
               <MdOutlineGroupAdd size={20} />
             </div>
           </div>
-          {items.map((item) => (
+
+          {/* Search input for filtering conversations */}
+          <div className="py-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search messages or users..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Filtered conversations */}
+          {filteredItems.map((item) => (
             <ConversationBox
               key={item.id}
               data={item}
               selected={conversationId === item.id}
             />
           ))}
+          {filteredItems.length === 0 && (
+            <div className="text-center text-gray-500 mt-4">
+              No conversations found
+            </div>
+          )}
         </div>
       </aside>
     </>

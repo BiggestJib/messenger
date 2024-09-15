@@ -8,7 +8,7 @@ import Avatar from "./Avatar";
 interface DesktopSidebarProps {
   currentUser: User;
 }
-import SettingsModal from "./SettingsModal";
+import SettingModal from "./SettingsModal";
 
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   const routes = useRoutes(); // Correct usage of the `useRoutes` hook
@@ -18,7 +18,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
 
   return (
     <>
-      <SettingsModal
+      <SettingModal
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false);
